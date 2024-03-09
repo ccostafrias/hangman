@@ -12,9 +12,9 @@ export default function Categories() {
     ))
 
     return (
-        <main>
-            <h1>Categories</h1>
-            <ul>{categoriesElements}</ul>
+        <main className='category-main'>
+            <h2 className='category-title'>Categories</h2>
+            <ul className='categories'>{categoriesElements}</ul>
         </main>
     )
 }
@@ -23,7 +23,7 @@ function Category(props) {
     const { category } = props
     return (
         <li>
-            <Link to={`/game?category=${category.toLowerCase()}&id=${random(99999)}`}>{category}</Link>
+            <Link className='category box' to={`/game?category=${category.toLowerCase()}`}>{category}</Link>
         </li>
     )
 }

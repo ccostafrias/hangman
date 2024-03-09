@@ -76,7 +76,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    min-height: 100vh;
+    padding: 2rem 0;
 }
 
 /* Menu */
@@ -91,10 +92,208 @@ body {
 
 /* Game */
 
-.game {
+.title {
+    font-size: var(--fs-700);
+    text-transform: capitalize;
+    font-weight: var(--fw-bold);
+}
+
+.game-container {
+    width: 90%;
+    max-width: 900px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto 1fr;
+    row-gap: 2rem;
+    width: 100%;
+    grid-template-areas: 
+    'hangman upper'
+    'hangman down';
+}
+
+.game-upper {
+    grid-area: upper;
+}
+
+.game-down {
+    grid-area: down;
+}
+
+.game-upper, .game-down {
     display: flex;
     flex-direction: column;
-    gap: 4rem;
+    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.hangman-container {
+    --size: 1rem;
+    --bar-size: 6rem;
+    --s1-size: 20rem;
+    --s2-size: 10rem;
+    --s3-size: 3rem;
+    --s4-width: 4rem;
+    --tot-width: calc((var(--bar-size)/2 - var(--size)/2 + var(--s2-size) + var(--size)));
+    --scale: 1;
+    
+    --d-s1: calc(var(--bar-size)/2);
+    --d-s2: calc(var(--d-s1) - var(--size)/2);
+    --d-s3: calc(var(--d-s2) + var(--s2-size));
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-area: hangman;
+}
+
+.hangman {
+    position: relative;
+    width: var(--tot-width);
+    height: var(--s1-size);
+    transform: scale(var(--scale));
+}
+
+@media (max-width: 750px) {
+    .game-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .hangman-container {
+        --scale: .75;
+        height: calc(var(--s1-size)*var(--scale));
+    }
+
+    .hangman {
+        transform: scale(var(--scale)) translateX(calc(-50% + var(--size)/2));
+    }
+}
+
+.hangman > * {
+    position: absolute;
+    width: var(--size);
+    height: var(--size);
+    z-index: 8;
+}
+
+.base {
+    position: absolute;
+    width: var(--bar-size);
+    background-color: var(--tertiary-color);
+    bottom: 0;
+    /* left: 50%; */
+    /* transform: translate(-50%); */
+    z-index: 9;
+}
+
+.support-1 {
+    position: absolute;
+    height: var(--s1-size);
+    background-color: var(--secondary-color);
+    bottom: 0;
+    /* left: 50%; */
+    left: var(--d-s1);
+    transform: translate(-50%);
+}
+
+.support-2 {
+    position: absolute;
+    width: var(--s2-size);
+    background-color: var(--secondary-color);
+    bottom: 20rem;
+    /* left: calc(50% - var(--size) / 2); */
+    left: var(--d-s2);
+    transform: translateY(100%);
+}
+
+.support-3 {
+    position: absolute;
+    height: var(--s3-size);
+    bottom: 20rem;
+    background-color: var(--secondary-color);
+    /* left: calc(50% + var(--s2-size)  - var(--size) / 2); */
+    left: var(--d-s3);
+    transform: translateY(100%);
+}
+
+.support-4 {
+    position: absolute;
+    height: calc((var(--s4-width) - var(--size) / 2) * sqrt(2));
+    transform-origin: bottom;
+    transform: translateX(-50%) rotate(45deg);
+    background-color: var(--tertiary-color);
+    bottom: calc(20rem - var(--s4-width));
+    /* left: 50%; */
+    left: var(--d-s1);
+    z-index: 7;
+}
+
+.person {
+    --body-size: 5rem;
+    --members-size: 3rem;
+    width: 0;
+    height: 0;
+    bottom: calc(var(--s1-size) - var(--s3-size) + 5px);
+    /* left: calc(var(--s2-size) - var(--size)/2); */
+    left: var(--d-s3);
+    
+}
+
+.person > * {
+    --p-size: 3rem;
+    width: var(--size);
+    height: var(--size);
+    position: absolute;
+}
+
+.person > :nth-child(1) {
+    width: var(--p-size);
+    height: var(--p-size);
+    transform: translate(calc(-50% + var(--size)/2));
+    border-radius: 50%;
+    background-color: var(--light-color);
+    filter: brightness(120%);
+    z-index: 9;
+}
+
+.person > :nth-child(2) {
+    top: calc(var(--p-size) - 5px);
+    height: var(--body-size);
+    background-color: var(--light-color);
+}
+
+.person > :nth-child(3) {
+    top: calc(var(--p-size) + 5px);
+    height: var(--members-size);
+    background-color: var(--light-color);
+    transform-origin: top;
+    transform: rotate(60deg);
+}
+
+.person > :nth-child(4) {
+    top: calc(var(--p-size) + 5px);
+    height: var(--members-size);
+    background-color: var(--light-color);
+    transform-origin: top;
+    transform: rotate(-60deg);
+}
+
+
+.person > :nth-child(5) {
+    top: calc(var(--p-size) + var(--body-size) - var(--size));
+    height: var(--members-size);
+    background-color: var(--light-color);
+    transform-origin: top;
+    transform: rotate(45deg);
+}
+
+.person > :nth-child(6) {
+    top: calc(var(--p-size) + var(--body-size) - var(--size));
+    height: var(--members-size);
+    background-color: var(--light-color);
+    transform-origin: top;
+    transform: rotate(-45deg);
 }
 
 .letters, .guesses {
@@ -102,19 +301,21 @@ body {
     margin: 0 auto;
     width: 90%;
     font-size: var(--fs-500);
+    text-transform: uppercase;
+    align-self: center;
 }
 
 .letters, .guesses, .word {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: .5em;
+    gap: .4em;
     align-items: center;
     justify-content: center;
 }
 
-.guesses {
-    column-gap: 3rem;
+.guesses{
+    gap: .75em;
 }
 
 .cell {
@@ -122,23 +323,14 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 2em;
     border-radius: 5px;
-    color: var(--dark-color)
+    /* color: var(--dark-color) */
 }
 
 .letter {
     aspect-ratio: 1/1;
-    background-color: #fff;
-    cursor: pointer;
-    transition: all .2s ease;
-    transform: translateY(-5px);
-    box-shadow: 0 5px 0 rgba(0, 0, 0, 0.5);
-}
-
-.letter:hover, .letter-down {
-    transform: translateY(0);
-    box-shadow: none;
+    background-color: var(--secondary-color);
+    padding: 1em;
 }
 
 .guess {
@@ -146,7 +338,8 @@ body {
     background-color: var(--light-color);
     color: #fff;
     border-radius: 10px;
-    font-size: var(--fs-600);
+    /* font-size: var(--fs-600); */
+    width: 2em;
 }
 
 .deactivated, .unrevealed {
@@ -158,4 +351,69 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.game-nav {
+    display: flex;
+    gap: 1rem;
+}
+
+.game-nav--icon {
+    aspect-ratio: 1/1;
+    border-radius: 5px;
+    background-color: var(--secondary-color);
+    padding: 1.5em;
+    cursor: pointer;
+}
+
+.win-title {
+    font-size: var(--fs-600);
+    font-weight: var(--fw-bold);
+}
+
+/* Categories */
+
+.category-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    max-width: 900px;
+}
+
+.category-title {
+    font-size: var(--fs-700);
+    font-weight: var(--fw-bold);
+}
+
+.categories {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+
+.category {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--tertiary-color);
+    padding: .75em;
+    border-radius: 5px;
+    font-size: var(--fs-600);
+}
+
+.box {
+    cursor: pointer;
+    transition: all .2s ease;
+    transform: translateY(-5px);
+    box-shadow: 0 5px 0 rgba(0, 0, 0, 0.5);
+}
+
+.box:hover {
+    transform: translateY(0);
+    box-shadow: none;
 }

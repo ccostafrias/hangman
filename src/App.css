@@ -417,3 +417,25 @@ body {
     transform: translateY(0);
     box-shadow: none;
 }
+
+/* Languages */
+
+.languages {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.language-container {
+    padding: .5em 2em;
+    cursor: pointer;
+}
+
+.language {
+    text-transform: capitalize;
+}
+
+.language-container.current {
+    opacity: .5;
+}

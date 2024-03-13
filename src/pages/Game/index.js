@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react'
 import useCategory from '../../hooks/useCategory'
-import { Link, useSearchParams, useNavigate } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import random from '../../utils/random'
 
-import { RefreshOutline, Home } from 'react-ionicons'
+import { RefreshOutline, Home, Key } from 'react-ionicons'
+
+import { useTranslation } from 'react-i18next'
 
 export default function Game() {
     const [searchParams, setSearchParams] = useSearchParams()
     const [randomCategory, setRandomCategory] = useState(random(9999))
     const category = searchParams.get('category')
-    const { data, loading, error } = useCategory(category)
+    const { data, loading } = useCategory(category)
+
+    const { t } = useTranslation()
 
     // const chosenOne = 'duda amor da minha vida'
+    // const chosenOne = 'uzbequistáo'
     const chosenOne = data ? data[randomCategory % data.length].toLowerCase() : ''
-    const word = [...chosenOne]
-    const words = chosenOne.split(' ')
+    const translated = chosenOne ? t(chosenOne).toLowerCase() : ''
+    const word = [...translated]
+    const words = translated.split(' ')
     const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
     const [guesses, setGuesses] = useState([])
@@ -62,11 +68,19 @@ export default function Game() {
     }
 
     function checkRevealed(key) {
-        return guesses.find(guess => guess.letter === key)
+        return findLetter(guesses.map(guess => guess.letter), key)
+    }
+
+    function findLetter(arr, letter) {
+        return arr.find(e => normalize(e) === normalize(letter))
+    }
+
+    function normalize(str) {
+        return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     }
 
     function handleGuess(key) {
-        const hasInWord = word.includes(key)
+        const hasInWord = findLetter(word, key)
 
         setGuesses(prev => (
             [...prev,
@@ -81,8 +95,8 @@ export default function Game() {
     function handleKey(e) {
         if (state !== 'in-game') return
 
-        const key = e.key
-        if (!letters.includes(key)) return
+        const key = e.code.slice(-1).toLowerCase()
+        if (!e.code.includes('Key') || !letters.includes(key)) return
 
         const keys = guesses.map(g => g.letter)
         if (keys.includes(key)) return
@@ -102,7 +116,7 @@ export default function Game() {
     
             if (wrongs >=6 ) {
                 setState('loose')
-            } else if (rights >= word.filter(l => letters.includes(l)).length) {
+            } else if (rights >= word.filter(l => l !== ' ').length) {
                 setState('win')
             }
         }
@@ -138,7 +152,7 @@ export default function Game() {
             </section>
             <section className='game-upper'>
                 <section className='title-container'>
-                    <h2 className='title'>{category}</h2>
+                    <h2 className='title'>{t(category.toLowerCase())}</h2>
                 </section>
                 <section className='guesses'>
                     {wordsElements}
@@ -159,7 +173,6 @@ export default function Game() {
 }
 
 function BottomGame(props) {
-    const navigate = useNavigate()
     const { state, resetGame } = props
     const topElement = state === 'win' ? <h2 className='win-title'>Well Done!</h2> : <h2 className='title'>Game Over</h2>
     return (
